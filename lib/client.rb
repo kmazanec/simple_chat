@@ -2,43 +2,42 @@
 
 require "socket"
 
-module Message_Passing
-  $current_message = "blank"
-  def set_current_message(message)
-    $current_message = message
-  end
+# module Message_Passing
+#   $current_message = "blank"
+#   def set_current_message(message)
+#     $current_message = message
+#   end
 
-  def get_current_message
-    $current_message
-  end
+#   def get_current_message
+#     $current_message
+#   end
+# end
+
+# class TCPSocket
+#   include Message_Passing
+# end
+
+client_session = TCPSocket.new( "localhost", 2008 )
+
+print "Enter your name: "
+input = gets.chomp
+
+client_session.puts input
+puts client_session.gets
+puts client_session.gets
+
+until client_session.closed?
+
+  print "Enter message :  "
+  msg = gets.chomp
+  client_session.puts msg
+  break if msg == "exit"
+  puts client_session.gets
+  # puts client_session.get_current_message
 end
 
-class TCPSocket
-  include Message_Passing
-end
-
-
-begin
- clientSession = TCPSocket.new( "localhost", 2008 )
- 
-rescue StandardError
-  puts "Error !! "
-else
-
-
-  while !(clientSession.closed?)
-
-    print "Enter message :  "
-    msg = gets.chomp
-    clientSession.puts msg
-    puts clientSession.gets
-    # puts clientSession.get_current_message
-  end
-
-end
-
-
-
+client_session.close
+  
 # server = TCPSocket.open('localhost',2000)
 
 # puts "Server name: #{server.name}"
