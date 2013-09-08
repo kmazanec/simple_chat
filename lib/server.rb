@@ -1,26 +1,9 @@
 # Chat server code goes here
 
+$LOAD_PATH << './'
+
 require 'socket'
-
-# server = TCPServer.new 2000
-
-# puts "Server name: #{server.name}"
-
-
-# module Message_Passing
-#   $current_message = "empty"
-#   def set_current_message(message)
-#     $current_message = message
-#   end
-
-#   def get_current_message
-#     $current_message
-#   end
-# end
-
-# class TCPServer
-#   include Message_Passing
-# end
+require 'helpers.rb'
 
 server = TCPServer.new(2008)
 
@@ -42,19 +25,18 @@ puts "Starting chat server..."
   It would run in the background
 
 
-
 =end
-
-
 
 users = []
 
-messages = []
-# connection = server.accept
+connections = []
+
 loop do
+  puts "Loop"
   Thread.start(server.accept) do |connection|
-    name = connection.gets
-    count = 0
+    connections << connection
+
+    name = connection.gets.chomp
     connection.puts "HELLO, #{name}"
     puts "A new user connected: #{name}"
     if users.any?
@@ -65,17 +47,16 @@ loop do
     users << name
 
     while (input = connection.gets.chomp)
-
       if input == "exit"
         connection.close
         break
       end
-      puts input
+      puts "[#{name}]: #{input}"
 
-      count += 1
-      #connection.puts users[count]
-
-      connection.puts "#{input}?"
+      connections.each do |person|
+        person.puts "[#{name}]: #{input}"
+      end
+      # connection.puts "#{input}?"
       # set_current_message(input)
     end
     puts "Client: #{name} disconnected"
